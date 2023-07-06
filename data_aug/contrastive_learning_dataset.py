@@ -19,6 +19,7 @@ class MuraDataset(Dataset):
         return len(self.dataframe)
 
     def __getitem__(self, index):
+        index = index % self.dataframe.shape[0]
         image_path = self.dataframe.loc[index, 'img_path']
         label = self.dataframe.loc[index, 'label']
 
