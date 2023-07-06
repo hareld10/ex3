@@ -26,7 +26,6 @@ class MuraDataset(Dataset):
 
         # Load the image using PIL
         image = Image.open(image_path).convert("RGB")
-        print("__getitem__:image", image.size, "label", label)
 
         # Apply transformations if any
         if self.transform is not None:
