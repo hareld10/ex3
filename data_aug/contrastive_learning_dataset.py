@@ -20,14 +20,13 @@ class MuraDataset(Dataset):
         return self.dataframe.shape[0]
 
     def __getitem__(self, index):
-        print("got index", index)
         index = index % self.dataframe.shape[0]
         image_path = self.dataframe.loc[index, 'colab_path']
         label = self.dataframe.loc[index, 'label']
 
         # Load the image using PIL
         image = Image.open(image_path)
-        print("__getitem__:image", image.size(), "label", label)
+        print("__getitem__:image", image.size, "label", label)
 
         # Apply transformations if any
         if self.transform is not None:
