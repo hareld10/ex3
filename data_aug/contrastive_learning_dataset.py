@@ -25,7 +25,7 @@ class MuraDataset(Dataset):
         label = self.dataframe.loc[index, 'label']
 
         # Load the image using PIL
-        image = Image.open(image_path)
+        image = Image.open(image_path).convert("RGB")
         print("__getitem__:image", image.size, "label", label)
 
         # Apply transformations if any
