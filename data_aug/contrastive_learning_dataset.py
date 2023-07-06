@@ -20,7 +20,7 @@ class MuraDataset(Dataset):
 
     def __getitem__(self, index):
         index = index % self.dataframe.shape[0]
-        image_path = self.dataframe.loc[index, 'img_path']
+        image_path = self.dataframe.loc[index, 'colab_path']
         label = self.dataframe.loc[index, 'label']
 
         # Load the image using PIL
