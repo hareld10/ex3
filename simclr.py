@@ -65,7 +65,9 @@ class SimCLR(object):
         logging.info(f"Start SimCLR training for {self.args.epochs} epochs.")
         logging.info(f"Training with gpu: {self.args.disable_cuda}.")
 
+
         for epoch_counter in range(self.args.epochs):
+            cur_loss = 0
             print("Epoch", epoch_counter)
             for images, _ in tqdm(train_loader):
                 images = torch.cat(images, dim=0)
@@ -75,6 +77,7 @@ class SimCLR(object):
                     features = self.model(images)
                     logits, labels = self.info_nce_loss(features)
                     loss = self.criterion(logits, labels)
+                    cur_loss += loss
 
                 self.optimizer.zero_grad()
 
@@ -89,14 +92,13 @@ class SimCLR(object):
                     self.writer.add_scalar('acc/top1', top1[0], global_step=n_iter)
                     self.writer.add_scalar('acc/top5', top5[0], global_step=n_iter)
                     self.writer.add_scalar('learning_rate', self.scheduler.get_lr()[0], global_step=n_iter)
-
+                    print("loss", loss, "acc/top1", top1[0], "acc/top5", top5[0])
                 n_iter += 1
-
             # warmup for the first 10 epochs
             if epoch_counter >= 10:
                 self.scheduler.step()
-            logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
-
+            # logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
+            print("epoch_loss", cur_loss / len(train_loader))
         logging.info("Training has finished.")
         # save model checkpoints
         checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
