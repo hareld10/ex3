@@ -15,11 +15,12 @@ class MuraDataset(Dataset):
         self.dataframe = pd.read_pickle(path)
         self.transform = transform  # Add any additional image transformations here
         print("loaded MURA Dataset", self.dataframe.shape)
+
     def __len__(self):
-        return len(self.dataframe)
+        return self.dataframe.shape[0]
 
     def __getitem__(self, index):
-        print("got index")
+        print("got index", index)
         index = index % self.dataframe.shape[0]
         image_path = self.dataframe.loc[index, 'colab_path']
         label = self.dataframe.loc[index, 'label']
