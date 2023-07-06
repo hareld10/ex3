@@ -65,11 +65,11 @@ class SimCLR(object):
         logging.info(f"Start SimCLR training for {self.args.epochs} epochs.")
         logging.info(f"Training with gpu: {self.args.disable_cuda}.")
 
-
         for epoch_counter in range(self.args.epochs):
             cur_loss = 0
             print("Epoch", epoch_counter)
             for images, _ in tqdm(train_loader):
+                print("true labels?", _)
                 images = torch.cat(images, dim=0)
                 images = images.to(self.args.device)
 
@@ -83,7 +83,6 @@ class SimCLR(object):
                     print("logits", logits)
                     loss = self.criterion(logits, labels)
                     cur_loss += loss
-
 
                 self.optimizer.zero_grad()
 
