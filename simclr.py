@@ -74,10 +74,16 @@ class SimCLR(object):
                 images = images.to(self.args.device)
 
                 with autocast(enabled=self.args.fp16_precision):
+                    print("images.shape", images.shape)
                     features = self.model(images)
+                    print("featurs.shape", features.shape)
                     logits, labels = self.info_nce_loss(features)
+                    print("logits.shape", logits.shape, "labels", labels.shape)
+                    print("labels", labels)
+                    print("logits", logits)
                     loss = self.criterion(logits, labels)
                     cur_loss += loss
+
 
                 self.optimizer.zero_grad()
 
