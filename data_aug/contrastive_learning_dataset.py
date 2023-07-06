@@ -3,6 +3,33 @@ from data_aug.gaussian_blur import GaussianBlur
 from torchvision import transforms, datasets
 from data_aug.view_generator import ContrastiveLearningViewGenerator
 from exceptions.exceptions import InvalidDatasetSelection
+import pandas as pd
+
+import torch
+from torch.utils.data import Dataset
+from PIL import Image
+
+
+class MuraDataset(Dataset):
+    def __init__(self, path, transform):
+        self.dataframe = pd.read_pickle(path)
+        self.transform = transform  # Add any additional image transformations here
+        print("loaded MURA Dataset", self.dataframe.shape)
+    def __len__(self):
+        return len(self.dataframe)
+
+    def __getitem__(self, index):
+        image_path = self.dataframe.loc[index, 'img_path']
+        label = self.dataframe.loc[index, 'label']
+
+        # Load the image using PIL
+        image = Image.open(image_path)
+
+        # Apply transformations if any
+        if self.transform is not None:
+            image = self.transform(image)
+
+        return image, label
 
 
 class ContrastiveLearningDataset:
@@ -32,7 +59,12 @@ class ContrastiveLearningDataset:
                                                           transform=ContrastiveLearningViewGenerator(
                                                               self.get_simclr_pipeline_transform(96),
                                                               n_views),
-                                                          download=True)}
+                                                          download=True),
+                          'mura': lambda: MuraDataset(self.root_folder,
+                                                      transform=ContrastiveLearningViewGenerator(
+                                                          self.get_simclr_pipeline_transform(96),
+                                                          n_views),
+                                                      )}
 
         try:
             dataset_fn = valid_datasets[name]
