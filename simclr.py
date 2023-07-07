@@ -106,8 +106,7 @@ class SimCLR(object):
                 self.scheduler.step()
             # logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
             print("epoch_loss", cur_loss / len(train_loader))
-            if epoch_counter > 0 and epoch_counter % 5 == 0:
-                self.save_checkpoint(epoch_counter)
+            self.save_checkpoint(epoch_counter)
         logging.info("Training has finished.")
         # save model checkpoints
         self.save_checkpoint(self.args.epochs)
