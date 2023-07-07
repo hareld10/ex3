@@ -15,7 +15,7 @@ from PIL import Image
 class MuraDataset(Dataset):
     def __init__(self, path, transform):
         self.dataframe = pd.read_pickle(path)
-        self.dataframe = self.dataframe.sample(frac=0.5).reset_index(drop=True)
+        # self.dataframe = self.dataframe.sample(frac=0.5).reset_index(drop=True)
         self.transform = transform  # Add any additional image transformations here
         print("loaded MURA Dataset", self.dataframe.shape)
 
