@@ -54,8 +54,17 @@ class SimCLR(object):
         logits = logits / self.args.temperature
         return logits, labels
 
-    def train(self, train_loader):
+    def save_checkpoint(self, epoch):
+        checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(epoch)
+        save_checkpoint({
+            'epoch': self.args.epochs,
+            'arch': self.args.arch,
+            'state_dict': self.model.state_dict(),
+            'optimizer': self.optimizer.state_dict(),
+        }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
+        logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
 
+    def train(self, train_loader):
         scaler = GradScaler(enabled=self.args.fp16_precision)
 
         # save config file
@@ -67,20 +76,13 @@ class SimCLR(object):
 
         for epoch_counter in range(self.args.epochs):
             cur_loss = 0
-            print("Epoch", epoch_counter)
             for images, _ in tqdm(train_loader):
-                print("true labels?", _)
                 images = torch.cat(images, dim=0)
                 images = images.to(self.args.device)
 
                 with autocast(enabled=self.args.fp16_precision):
-                    print("images.shape", images.shape)
                     features = self.model(images)
-                    print("featurs.shape", features.shape)
                     logits, labels = self.info_nce_loss(features)
-                    print("logits.shape", logits.shape, "labels", labels.shape)
-                    print("labels", labels)
-                    print("logits", logits)
                     loss = self.criterion(logits, labels)
                     cur_loss += loss
 
@@ -104,13 +106,9 @@ class SimCLR(object):
                 self.scheduler.step()
             # logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
             print("epoch_loss", cur_loss / len(train_loader))
+            if epoch_counter > 0 and epoch_counter % 5 == 0:
+                self.save_checkpoint(epoch_counter)
         logging.info("Training has finished.")
         # save model checkpoints
-        checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(self.args.epochs)
-        save_checkpoint({
-            'epoch': self.args.epochs,
-            'arch': self.args.arch,
-            'state_dict': self.model.state_dict(),
-            'optimizer': self.optimizer.state_dict(),
-        }, is_best=False, filename=os.path.join(self.writer.log_dir, checkpoint_name))
-        logging.info(f"Model checkpoint and metadata has been saved at {self.writer.log_dir}.")
+        self.save_checkpoint(self.args.epochs)
+        print("Final")

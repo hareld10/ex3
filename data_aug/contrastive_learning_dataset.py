@@ -42,7 +42,8 @@ class ContrastiveLearningDataset:
     def get_simclr_pipeline_transform(size, s=1):
         """Return a set of data augmentation transformations as described in the SimCLR paper."""
         color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
-        data_transforms = transforms.Compose([transforms.RandomResizedCrop(size=size),
+        data_transforms = transforms.Compose([
+                                              transforms.RandomResizedCrop(size=size),
                                               transforms.RandomHorizontalFlip(),
                                               transforms.RandomApply([color_jitter], p=0.8),
                                               transforms.RandomGrayscale(p=0.2),
@@ -64,7 +65,7 @@ class ContrastiveLearningDataset:
                                                           download=True),
                           'mura': lambda: MuraDataset(self.root_folder,
                                                       transform=ContrastiveLearningViewGenerator(
-                                                          self.get_simclr_pipeline_transform(96),
+                                                          self.get_simclr_pipeline_transform(244),
                                                           n_views),
                                                       )}
 
