@@ -1,3 +1,5 @@
+import os.path
+import numpy as np
 from torchvision.transforms import transforms
 from data_aug.gaussian_blur import GaussianBlur
 from torchvision import transforms, datasets
@@ -20,10 +22,17 @@ class MuraDataset(Dataset):
         return self.dataframe.shape[0]
 
     def __getitem__(self, index):
-        index = index % self.dataframe.shape[0]
-        image_path = self.dataframe.loc[index, 'colab_path']
-        label = self.dataframe.loc[index, 'label']
+        while True:
+            index = index % self.dataframe.shape[0]
+            image_path = self.dataframe.loc[index, 'colab_path']
+            label = self.dataframe.loc[index, 'label']
 
+            if not os.path.exists(image_path):
+                print("path doesn't exists", image_path)
+                index = np.random.randint(self.dataframe.shape[0])
+                continue
+            else:
+                break
         # Load the image using PIL
         image = Image.open(image_path).convert("RGB")
 
