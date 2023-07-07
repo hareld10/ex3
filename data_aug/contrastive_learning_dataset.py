@@ -32,10 +32,15 @@ class MuraDataset(Dataset):
                 print("path doesn't exists", image_path)
                 index = np.random.randint(self.dataframe.shape[0])
                 continue
-            else:
+
+            try:
+                # Load the image using PIL
+                image = Image.open(image_path).convert("RGB")
                 break
-        # Load the image using PIL
-        image = Image.open(image_path).convert("RGB")
+            except Exception as e:
+                print(e)
+                index = np.random.randint(self.dataframe.shape[0])
+                continue
 
         # Apply transformations if any
         if self.transform is not None:
