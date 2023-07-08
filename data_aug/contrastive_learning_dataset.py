@@ -13,10 +13,13 @@ from PIL import Image
 
 
 class MuraDataset(Dataset):
-    def __init__(self, path, transform):
+    def __init__(self, path, transform, body_part=None):
         self.dataframe = pd.read_pickle(path)
         # self.dataframe = self.dataframe.sample(frac=0.5).reset_index(drop=True)
         self.transform = transform  # Add any additional image transformations here
+        if body_part:
+            self.dataframe = self.dataframe[self.dataframe.body_part == body_part].reset_index(drop=True)
+
         print("loaded MURA Dataset", self.dataframe.shape)
 
     def __len__(self):
@@ -66,7 +69,7 @@ class ContrastiveLearningDataset:
                                               transforms.ToTensor()])
         return data_transforms
 
-    def get_dataset(self, name, n_views):
+    def get_dataset(self, name, n_views, body_part=None):
         valid_datasets = {'cifar10': lambda: datasets.CIFAR10(self.root_folder, train=True,
                                                               transform=ContrastiveLearningViewGenerator(
                                                                   self.get_simclr_pipeline_transform(32),
@@ -82,6 +85,7 @@ class ContrastiveLearningDataset:
                                                       transform=ContrastiveLearningViewGenerator(
                                                           self.get_simclr_pipeline_transform(244),
                                                           n_views),
+                                                      body_part=body_part
                                                       )}
 
         try:
