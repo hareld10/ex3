@@ -80,7 +80,7 @@ class SimCLR(object):
                 images = torch.cat(images, dim=0)
                 images = images.to(self.args.device)
 
-                with autocast(enabled=self.args.fp16_precision):
+                with autocast(enabled=self.args.fp16_SKprecision):
                     features = self.model(images)
                     logits, labels = self.info_nce_loss(features)
                     loss = self.criterion(logits, labels)
@@ -105,8 +105,10 @@ class SimCLR(object):
             if epoch_counter >= 10:
                 self.scheduler.step()
             # logging.debug(f"Epoch: {epoch_counter}\tLoss: {loss}\tTop1 accuracy: {top1[0]}")
-            print("epoch_loss", cur_loss / len(train_loader))
-            self.save_checkpoint(epoch_counter)
+            if epoch_counter > 0 and epoch_counter % 10 == 0:
+                print("epoch_loss", cur_loss / len(train_loader))
+                self.save_checkpoint(epoch_counter)
+
         logging.info("Training has finished.")
         # save model checkpoints
         self.save_checkpoint(self.args.epochs)
