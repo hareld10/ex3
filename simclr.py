@@ -19,7 +19,7 @@ class SimCLR(object):
         self.model = kwargs['model'].to(self.args.device)
         self.optimizer = kwargs['optimizer']
         self.scheduler = kwargs['scheduler']
-        self.suffix = f"{self.args['body_part']}_{self.args['arch']}"
+        self.suffix = f"{self.args.body_part}_{self.args.arch}"
         self.writer = SummaryWriter(filename_suffix=self.suffix)
         logging.basicConfig(filename=os.path.join(self.writer.log_dir, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
