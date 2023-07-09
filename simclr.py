@@ -19,7 +19,8 @@ class SimCLR(object):
         self.model = kwargs['model'].to(self.args.device)
         self.optimizer = kwargs['optimizer']
         self.scheduler = kwargs['scheduler']
-        self.writer = SummaryWriter()
+        self.suffix = f"{self.args.get('body_part')}_{self.args.get('arch')}"
+        self.writer = SummaryWriter(filename_suffix=self.suffix)
         logging.basicConfig(filename=os.path.join(self.writer.log_dir, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
 
@@ -55,7 +56,7 @@ class SimCLR(object):
         return logits, labels
 
     def save_checkpoint(self, epoch):
-        checkpoint_name = 'checkpoint_{:04d}.pth.tar'.format(epoch)
+        checkpoint_name = self.suffix + 'checkpoint_{:04d}.pth.tar'.format(epoch)
         save_checkpoint({
             'epoch': self.args.epochs,
             'arch': self.args.arch,
