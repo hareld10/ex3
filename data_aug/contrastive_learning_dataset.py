@@ -83,7 +83,7 @@ class ContrastiveLearningDataset:
                                                           download=True),
                           'mura': lambda: MuraDataset(self.root_folder,
                                                       transform=ContrastiveLearningViewGenerator(
-                                                          self.get_simclr_pipeline_transform(244),
+                                                          self.get_simclr_pipeline_transform(128),
                                                           n_views),
                                                       body_part=body_part
                                                       )}
