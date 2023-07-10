@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from datetime import datetime
 
 import torch
 import torch.nn.functional as F
@@ -20,7 +21,9 @@ class SimCLR(object):
         self.optimizer = kwargs['optimizer']
         self.scheduler = kwargs['scheduler']
         self.suffix = f"{self.args.body_part}_{self.args.arch}"
-        self.writer = SummaryWriter(comment=self.suffix)
+        now = datetime.now()
+        formatted_datetime = now.strftime("%m-%d_%H-%M-%S")  # Format the datetime as desired
+        self.writer = SummaryWriter(log_dir=formatted_datetime, comment=self.suffix)
         logging.basicConfig(filename=os.path.join(self.writer.log_dir, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
 
