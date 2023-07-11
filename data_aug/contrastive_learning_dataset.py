@@ -15,7 +15,6 @@ from PIL import Image
 class MuraDataset(Dataset):
     def __init__(self, path, transform, body_part=None):
         self.dataframe = pd.read_pickle(path)
-        # self.dataframe = self.dataframe.sample(frac=0.5).reset_index(drop=True)
         self.transform = transform  # Add any additional image transformations here
         if body_part:
             self.dataframe = self.dataframe[self.dataframe.body_part == body_part].reset_index(drop=True)
@@ -61,6 +60,7 @@ class ContrastiveLearningDataset:
         """Return a set of data augmentation transformations as described in the SimCLR paper."""
         color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
         data_transforms = transforms.Compose([
+                                              transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                                               transforms.RandomResizedCrop(size=size),
                                               transforms.RandomHorizontalFlip(),
                                               transforms.RandomApply([color_jitter], p=0.8),
