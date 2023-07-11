@@ -60,13 +60,14 @@ class ContrastiveLearningDataset:
         """Return a set of data augmentation transformations as described in the SimCLR paper."""
         color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
         data_transforms = transforms.Compose([
-                                              transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
                                               transforms.RandomResizedCrop(size=size),
                                               transforms.RandomHorizontalFlip(),
                                               transforms.RandomApply([color_jitter], p=0.8),
                                               transforms.RandomGrayscale(p=0.2),
                                               GaussianBlur(kernel_size=int(0.1 * size)),
-                                              transforms.ToTensor()])
+                                              transforms.ToTensor(),
+                                              transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+        )
         return data_transforms
 
     def get_dataset(self, name, n_views, body_part=None):
